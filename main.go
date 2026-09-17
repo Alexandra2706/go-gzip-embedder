@@ -85,6 +85,9 @@ func genHandlerCall(g *Group, fileName string) {
 	var curr_case *Statement
 	if httpPath == *rootRoute {
 		curr_case = g.Case(Lit("/"), Lit(httpPath))
+	} else if strings.HasSuffix(httpPath, "/index.html") {
+		dirPath := strings.TrimSuffix(httpPath, "index.html")
+		curr_case = g.Case(Lit(dirPath), Lit(httpPath))
 	} else {
 		curr_case = g.Case(Lit(httpPath))
 	}

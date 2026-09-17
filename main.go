@@ -73,7 +73,11 @@ func IdentifierFromFileName(name string) string {
 }
 
 func genHandlerCall(g *Group, fileName string) {
-	constId := IdentifierFromFileName(fileName)
+	canonicalFileName := fileName
+	if string(os.PathSeparator) != "/" {
+		canonicalFileName = strings.ReplaceAll(fileName, string(os.PathSeparator), "/")
+	}
+	constId := IdentifierFromFileName(canonicalFileName)
 
 	data, err := os.ReadFile(path.Join(*srcPath, fileName))
 	if err != nil {
@@ -81,7 +85,7 @@ func genHandlerCall(g *Group, fileName string) {
 	}
 	makeGlobalGzippedBinConst(constId, data)
 
-	httpPath := "/" + fileName
+	httpPath := "/" + canonicalFileName
 	var curr_case *Statement
 	if httpPath == *rootRoute {
 		curr_case = g.Case(Lit("/"), Lit(httpPath))
